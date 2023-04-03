@@ -22,7 +22,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
-def versionInfo = [major: '2', minor: System.getenv("BUILD_NUMBER") ?: "0-SNAPSHOT"]
+def versionInfo = [major: '2', minor: project.property("BUILD_NUMBER") ?: "0-SNAPSHOT"]
 
 task build {
     group = 'build'
@@ -36,7 +36,7 @@ allprojects {
     version = versionInfo.values().join('.')
 
     ext {
-        jdaVersion = '5.0.0-beta.2'
+        jdaVersion = '5.0.0-beta.6'
         slf4jVersion = '1.7.36'
         okhttpVersion = '4.9.3'
         findbugsVersion = '3.0.2'
@@ -113,12 +113,12 @@ allprojects {
         }
         repositories {
             maven {
-                def releasesRepoUrl = "https://m2.chew.pro/releases"
-                def snapshotsRepoUrl = "https://m2.chew.pro/snapshots"
+                def releasesRepoUrl = "https://maven.vantrex.de/repository/drapuria-public/"
+                def snapshotsRepoUrl = "https://maven.vantrex.de/repository/maven-snapshots/"
                 url = project.version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
                 credentials {
-                    username = project.property("mchew-username")
-                    password = project.property("mchew-password")
+                    username = System.getenv("VANTREX_NEXUS_USER")
+                    password = System.getenv("VANTREX_NEXUS_PASSWORD")
                 }
             }
         }
@@ -280,9 +280,9 @@ publishing {
                 def repositoriesNode = asNode().appendNode('repositories')
                 def repositoryNode = repositoriesNode.appendNode('repository')
 
-                repositoryNode.appendNode('name', 'm2-chew')
-                repositoryNode.appendNode('id', 'm2-chew')
-                repositoryNode.appendNode('url', 'https://m2.chew.pro')
+                repositoryNode.appendNode('name', 'm2-vantrex')
+                repositoryNode.appendNode('id', 'm2-vantrex')
+                repositoryNode.appendNode('url', 'https://maven.vantrex.de/')
 
                 def dependenciesNode = asNode().appendNode('dependencies')
                 configurations.implementation.allDependencies.each {
@@ -296,3 +296,4 @@ publishing {
         }
     }
 }
+
